@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Otus.Teaching.PromoCodeFactory.Core.Domain.Administration;
+using Otus.Teaching.PromoCodeFactory.Core.Domain.PromoCodeManagement;
 
 namespace Otus.Teaching.PromoCodeFactory.DataAccess.Data
 {
@@ -15,10 +16,7 @@ namespace Otus.Teaching.PromoCodeFactory.DataAccess.Data
                 Email = "owner@somemail.ru",
                 FirstName = "Иван",
                 LastName = "Сергеев",
-                Roles = new List<Role>()
-                {
-                    Roles.FirstOrDefault(x => x.Name == "Admin")  
-                },
+                Role = Roles.FirstOrDefault(x => x.Name == "Admin"),
                 AppliedPromocodesCount = 5
             },
             new Employee()
@@ -27,10 +25,7 @@ namespace Otus.Teaching.PromoCodeFactory.DataAccess.Data
                 Email = "andreev@somemail.ru",
                 FirstName = "Петр",
                 LastName = "Андреев",
-                Roles = new List<Role>()
-                {
-                    Roles.FirstOrDefault(x => x.Name == "PartnerManager")  
-                },
+                Role = Roles.FirstOrDefault(x => x.Name == "PartnerManager"),
                 AppliedPromocodesCount = 10
             },
         };
@@ -48,6 +43,58 @@ namespace Otus.Teaching.PromoCodeFactory.DataAccess.Data
                 Id = Guid.Parse("b0ae7aac-5493-45cd-ad16-87426a5e7665"),
                 Name = "PartnerManager",
                 Description = "Партнерский менеджер"
+            }
+        };
+        
+        public static IEnumerable<Preference> Preferences => new List<Preference>()
+        {
+            new Preference()
+            {
+                Id = Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99c"),
+                Name = "Театр"
+            },
+            new Preference()
+            {
+                Id = Guid.Parse("c4bda62e-fc74-4256-a956-4760b3858cbd"),
+                Name = "Семья",
+            },
+            new Preference()
+            {
+                Id = Guid.Parse("76324c47-68d2-472d-abb8-33cfa8cc0c84"),
+                Name = "Дети",
+            }
+        };
+
+        public static IEnumerable<Customer> Customers
+        {
+            get
+            {
+                var customerId = Guid.Parse("a6c8c6b1-4349-45b0-ab31-244740aaf0f0");
+                var customers = new List<Customer>()
+                {
+                    new Customer()
+                    {
+                        Id = customerId,
+                        Email = "ivan_sergeev@mail.ru",
+                        FirstName = "Иван",
+                        LastName = "Петров"
+                    }
+                };
+
+                return customers;
+            }
+        }
+
+        public static IEnumerable<PromoCode> PromoCodes => new List<PromoCode>()
+        {
+            new PromoCode()
+            {
+                Id = Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef11c"),
+                Code = "Промокод на покупку билета в Театр",
+                ServiceInfo = "test",
+                PreferenceId = Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99c"),
+                PartnerManagerId = Guid.Parse("451533d5-d8d5-4a11-9c7b-eb9f14e1a32f"),
+                CustomerId = Guid.Parse("a6c8c6b1-4349-45b0-ab31-244740aaf0f0")
             }
         };
     }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Otus.Teaching.PromoCodeFactory.Core.Abstractions.Repositories;
 using Otus.Teaching.PromoCodeFactory.Core.Domain;
-using Otus.Teaching.PromoCodeFactory.Core.Domain.Administration;
 
 namespace Otus.Teaching.PromoCodeFactory.DataAccess.Repositories
 {
@@ -29,25 +28,24 @@ namespace Otus.Teaching.PromoCodeFactory.DataAccess.Repositories
             return Task.FromResult(Data.FirstOrDefault(x => x.Id == id));
         }
 
-        public Task CreateAsync(T entity)
+        public Task AddAsync(T entity)
         {
-            Data = Data.Append(entity);
-
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
-        public Task DeleteByIdAsync(Guid id)
+        public Task RemoveAsync(T entity)
         {
-            Data = Data.Where(x => x.Id != id);
-
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         public Task UpdateAsync(T entity)
         {
-            Data = Data.Where(x => x.Id != entity.Id).Append(entity);
+            throw new NotImplementedException();
+        }
 
-            return Task.CompletedTask;
+        public IQueryable<T> GetAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }

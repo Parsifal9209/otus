@@ -45,7 +45,7 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
         }
         
         /// <summary>
-        /// Получить данные сотрудника по Id
+        /// Получить данные сотрудника по id
         /// </summary>
         /// <returns></returns>
         [HttpGet("{id:guid}")]
@@ -55,111 +55,21 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
 
             if (employee == null)
                 return NotFound();
-            
+
             var employeeModel = new EmployeeResponse()
             {
                 Id = employee.Id,
                 Email = employee.Email,
-                Roles = employee.Roles.Select(x => new RoleItemResponse()
+                Role = new RoleItemResponse()
                 {
-                    Name = x.Name,
-                    Description = x.Description
-                }).ToList(),
+                    Name = employee.Role.Name,
+                    Description = employee.Role.Description
+                },
                 FullName = employee.FullName,
                 AppliedPromocodesCount = employee.AppliedPromocodesCount
             };
 
             return employeeModel;
-        }
-
-        /// <summary>
-        /// Создать сотрудника
-        /// </summary>
-        /// <param name="employeeRequest">Модель сотрудника</param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<ActionResult> CreateEmployeeAsync([FromBody]EmployeeRequest employeeRequest)
-        {
-            var employee = await _employeeRepository.GetByIdAsync(employeeRequest.Id);
-
-            if (employee != null)
-                return BadRequest($"Сотрудник с указанным идентификатором {employeeRequest.Id} уже существует в системе. Измените идентификатор");
-
-            if(!employeeRequest.Roles.Any())
-                return BadRequest($"Не указана роль у сотрудника.");
-
-            if (employeeRequest.Id == default(Guid))
-                employeeRequest.Id = Guid.NewGuid();
-
-            employee = new Employee()
-            {
-                Id = employeeRequest.Id,
-                FirstName = employeeRequest.FirstName,
-                LastName = employeeRequest.LastName,
-                Email = employeeRequest.Email,
-                Roles = employeeRequest.Roles.Select(x => new Role()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description
-                }).ToList(),                
-                AppliedPromocodesCount = employeeRequest.AppliedPromocodesCount
-            };
-
-            await _employeeRepository.CreateAsync(employee);
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Удалить сотрудника по id
-        /// </summary>
-        /// <param name="id">Идентификатор сотрудника</param>
-        /// <returns></returns>
-        [HttpDelete]
-        public async Task<ActionResult> DeleteEmployeeByIdAsync(Guid id)
-        {
-            var employee = await _employeeRepository.GetByIdAsync(id);
-
-            if (employee == null)
-                return NotFound("Сотрудник не найден");
-
-            await _employeeRepository.DeleteByIdAsync(id);
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Обновить сотрудника по id
-        /// </summary>
-        /// <param name="id">Идентификатор сотрудника</param>
-        /// <returns></returns>
-        [HttpPut]
-        public async Task<ActionResult> UpdateEmployee([FromBody] EmployeeRequest employeeRequest)
-        {
-            var employee = await _employeeRepository.GetByIdAsync(employeeRequest.Id);
-
-            if (employee == null)
-                return NotFound("Сотрудник не найден");
-
-            employee = new Employee()
-            {
-                Id = employeeRequest.Id,
-                FirstName = employeeRequest.FirstName,
-                LastName = employeeRequest.LastName,
-                Email = employeeRequest.Email,
-                Roles = employeeRequest.Roles.Select(x => new Role()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description
-                }).ToList(),
-                AppliedPromocodesCount = employeeRequest.AppliedPromocodesCount
-            };
-
-            await _employeeRepository.UpdateAsync(employee);
-
-            return Ok();
         }
     }
 }
