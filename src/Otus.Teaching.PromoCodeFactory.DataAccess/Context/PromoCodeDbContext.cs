@@ -82,9 +82,9 @@ options) : base(options)
                 .HasForeignKey(k=>k.RoleId);
 
             builder.Entity<Employee>()
-                .HasOne(k => k.PromoCode)
+                .HasMany(k => k.PromoCodes)
                 .WithOne(k => k.PartnerManager)
-                .HasForeignKey<PromoCode>(k=>k.PartnerManagerId);
+                .HasForeignKey(k=>k.PartnerManagerId);
 
             builder.Entity<Employee>().HasData(FakeDataFactory.Employees.Select(x=> new Employee
             {
@@ -176,7 +176,8 @@ options) : base(options)
 
             builder.Entity<PromoCode>()
                 .HasOne(k => k.PartnerManager)
-                .WithOne(k => k.PromoCode);
+                .WithMany(k => k.PromoCodes)
+                .HasForeignKey(k=>k.PartnerManagerId);
 
             builder.Entity<PromoCode>()
                 .HasOne(k => k.Preference)

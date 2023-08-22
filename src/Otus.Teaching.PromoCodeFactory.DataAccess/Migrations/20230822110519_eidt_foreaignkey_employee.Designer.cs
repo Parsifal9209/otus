@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Otus.Teaching.PromoCodeFactory.DataAccess.Context;
 
 namespace Otus.Teaching.PromoCodeFactory.DataAccess.Migrations
 {
     [DbContext(typeof(PromoCodeDbContext))]
-    partial class PromoCodeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230822110519_eidt_foreaignkey_employee")]
+    partial class eidt_foreaignkey_employee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
