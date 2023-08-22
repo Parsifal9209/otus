@@ -109,10 +109,15 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType(typeof(ProblemDetails))]
         public async Task<IActionResult> EditCustomersAsync(Guid id, CreateOrEditCustomerRequest request)
         {
             var customer = await _customerRepository.GetByIdAsync(id);
+
+            if (customer is null)
+                return NotFound("Клиент не найден.");
+
             customer.FirstName = request.FirstName;
             customer.LastName = request.LastName;
             customer.Email = request.Email;
@@ -134,10 +139,15 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
         /// <returns></returns>
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType(typeof(ProblemDetails))]
         public async Task<IActionResult> DeleteCustomer(Guid id)
         {
             var customer = await _customerRepository.GetByIdAsync(id);
+
+            if (customer is null)
+                return NotFound("Клиент не найден.");
+
             await _customerRepository.RemoveAsync(customer);
 
             return Ok();

@@ -1,4 +1,6 @@
-﻿namespace Otus.Teaching.PromoCodeFactory.WebHost.Models
+﻿using System;
+
+namespace Otus.Teaching.PromoCodeFactory.WebHost.Models
 {
     public class GivePromoCodeRequest
     {
@@ -9,5 +11,7 @@
         public string PromoCode { get; set; }
 
         public string Preference { get; set; }
+
+        public Guid PartnerManagerId { get; set; }
     }
 }

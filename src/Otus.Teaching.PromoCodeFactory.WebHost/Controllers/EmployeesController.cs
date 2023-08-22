@@ -18,10 +18,12 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
         : ControllerBase
     {
         private readonly IRepository<Employee> _employeeRepository;
+        private readonly IRepository<Role> _roleRepository;
 
-        public EmployeesController(IRepository<Employee> employeeRepository)
+        public EmployeesController(IRepository<Employee> employeeRepository, IRepository<Role> roleRepository)
         {
             _employeeRepository = employeeRepository;
+            _roleRepository = roleRepository;
         }
         
         /// <summary>
@@ -56,14 +58,16 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
             if (employee == null)
                 return NotFound();
 
+            var role = await _roleRepository.GetByIdAsync(employee.RoleId);
+
             var employeeModel = new EmployeeResponse()
             {
                 Id = employee.Id,
                 Email = employee.Email,
                 Role = new RoleItemResponse()
                 {
-                    Name = employee.Role.Name,
-                    Description = employee.Role.Description
+                    Name = role.Name,
+                    Description = role.Description
                 },
                 FullName = employee.FullName,
                 AppliedPromocodesCount = employee.AppliedPromocodesCount

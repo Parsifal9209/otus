@@ -25,6 +25,6 @@ namespace Otus.Teaching.PromoCodeFactory.Core.Domain.Administration
 
         public int AppliedPromocodesCount { get; set; }
 
-        public PromoCode PromoCode { get; set; }
+        public ICollection<PromoCode> PromoCodes { get; set; }
     }
 }

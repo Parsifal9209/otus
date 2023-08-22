@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Mapster;
 using MapsterMapper;
@@ -21,14 +22,16 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
     public class PromocodesController
         : ControllerBase
     {
+        private readonly IRepository<Preference> _preferenceRepository;
         private readonly IRepository<PromoCode> _promocodeRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IMapper _mapper;
 
-        public PromocodesController(IRepository<PromoCode> promocodeRepository, IRepository<Customer> customerRepository, IMapper mapper)
+        public PromocodesController(IRepository<PromoCode> promocodeRepository, IRepository<Customer> customerRepository, IRepository<Preference> preferenceRepository, IMapper mapper)
         {
             _promocodeRepository = promocodeRepository;
             _customerRepository = customerRepository;
+            _preferenceRepository = preferenceRepository;
             _mapper = mapper;
         }
 
@@ -55,30 +58,31 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers
         [ProducesDefaultResponseType(typeof(ProblemDetails))]
         public async Task<IActionResult> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request)
         {
-            //TODO: Создать промокод и выдать его клиентам с указанным предпочтением
-            var promocode = request.Adapt<PromoCode>();
-            promocode.PartnerManagerId = Guid.Parse("451533d5-d8d5-4a11-9c7b-eb9f14e1a31f");
-            promocode.PreferenceId = Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99c");
-            promocode.CustomerId = Guid.Parse("a6c8c6b1-4349-45b0-ab31-244740aaf0f0");
+            var preferences = (await _preferenceRepository.GetAllAsync()).ToList();
+            var preference = preferences.FirstOrDefault(x=>x.Name.ToUpper() == request.Preference.ToUpper());
 
-            await _promocodeRepository.AddAsync(promocode);
+            if (preference is null)
+                return NotFound("Указанное предпочтение не найдено!");
 
             var customers = _customerRepository.GetAll()
                 .Include(x => x.CustomerPreferences)
-                .ThenInclude(x => x.Preference)
-                .AsSplitQuery()
+                .Where(x => x.CustomerPreferences.Any(x=>x.PreferenceId == preference.Id))
                 .ToList();
 
-            foreach (var customer in customers)
-            {
-                if (customer.CustomerPreferences.Any(x => x.Preference.Name == request.Preference))
-                {
-                    customer.PromoCodes.Add(promocode);
-                    await _customerRepository.UpdateAsync(customer);
-                }
-            }
+            var rnd = new Random();
+            var lukyCustomer = customers[rnd.Next(customers.Count)];
 
-            return Ok();
+            var promocode = request.Adapt<PromoCode>();
+            promocode.Preference = preference;
+            promocode.PreferenceId = preference.Id;
+            promocode.CustomerId = lukyCustomer.Id;
+
+            await _promocodeRepository.AddAsync(promocode);
+
+            lukyCustomer.PromoCodes.Add(promocode);
+            await _customerRepository.UpdateAsync(lukyCustomer);
+
+            return Ok($"Промокод создан и добавлен случайному клиенту " + lukyCustomer.FullName);
         }
     }
 }
